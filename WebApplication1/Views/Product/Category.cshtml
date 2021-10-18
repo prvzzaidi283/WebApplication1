@@ -1,0 +1,85 @@
+﻿
+@{
+    ViewBag.Title = "Category";
+}
+
+<h2>Category</h2>
+
+<div>
+    @Html.ActionLink("Create New", "CreateCategory","Product", new { }, new { @class = "btn btn-success" })
+</div>
+<hr>
+<table id="data" class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+@section scripts
+{
+    <script>
+    GetDataTableData();
+    function GetDataTableData() {
+        $("#data").DataTable({
+            "processing": true,
+            "serverSide": true,
+            "filter": false,
+            "destroy": true,
+            "ordering": false,
+            "lengthMenu": [ 5, 10, 15, 20, 25,50 ],
+            
+            "language": {
+                        "emptyTable": "No record found.",  
+                        processing: '<i class="fa fa-spinner fa-spin fa-3x fa-fw"></i><span class="sr-only">Loading...</span> '
+                       },
+           
+            "ajax": {
+                "url": '/product/getCategriesjsonlist',
+                "type": "POST",
+                "datatype": "json"
+            },
+
+            "columns": [
+                    { "data": "Name" ,"name": "Name", "autoWidth": true},
+                  {
+                  "mRender": function ( data, type, row ) {
+                      return '<a class="btn btn-info btn-sm" href=EditCategory/' + row.ID + '>' + 'Edit' + '</a>   <a class="btn btn-danger btn-sm" onClick="categoryDelete('+row.ID+')" >' + 'Delete' + '</a>' ;
+
+                     }
+
+                   }         
+
+               
+                   
+                ]
+            });
+        }
+    </script>
+    
+    <script>
+    
+      function categoryDelete(catID)
+        {
+        if (confirm("Do you want to delete this category?")) { 
+              
+        $.ajax({  
+                    type: "POST",  
+                    url: "/product/DeleteCategory",  
+                    data: {Id:catID},  
+                    dataType: "json" , 
+                    success: function(data) {  
+                        alert(data);  
+                        GetDataTableData();
+                    },  
+                    error: function() {  
+                        alert("Error occured!!")  
+                    }  
+                });   
+        }
+        }
+    </script>
+ }
+
